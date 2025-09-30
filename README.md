@@ -80,9 +80,6 @@ brain-tumor-ai-classifier/
 4. **Read Medical Information**: Review detailed explanations in organized tabs
 5. **Analyze Confidence**: Check detailed probability breakdown
 
-## ⚠️ Medical Disclaimer
-
-**IMPORTANT**: This AI model is designed for educational and research purposes only. It should not be used as a substitute for professional medical diagnosis or treatment decisions. Always consult with qualified healthcare professionals for proper medical evaluation, diagnosis, and treatment planning.
 
 
 ## 🙏 Acknowledgments
@@ -98,5 +95,6 @@ brain-tumor-ai-classifier/
 
 
 ⚕️ **Built for Healthcare Innovation** • 🧠 **Powered by AI** • 🎯 **Designed for Accuracy**
+
 
 
