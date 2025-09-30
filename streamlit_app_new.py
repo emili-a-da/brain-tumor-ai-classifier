@@ -85,7 +85,7 @@ except (KeyError, FileNotFoundError):
 
 # ========= Utilities =========
 def _validate_model_file(local_path: str) -> bool:
-    """Validate that the model file is not corrupted."""
+    """Validate that the model file is not corrupted (silent validation)."""
     try:
         if not os.path.exists(local_path):
             return False
@@ -93,7 +93,7 @@ def _validate_model_file(local_path: str) -> bool:
         # Check file size (should be at least 1MB for a valid model)
         file_size = os.path.getsize(local_path)
         if file_size < 1000000:
-            st.warning(f"⚠️ Model file seems too small ({file_size} bytes). Re-downloading...")
+            # Silent removal and re-download
             os.remove(local_path)
             return False
         
@@ -102,13 +102,13 @@ def _validate_model_file(local_path: str) -> bool:
             header = f.read(8)
             # HDF5 files start with specific signature
             if not header.startswith(b'\x89HDF\r\n\x1a\n'):
-                st.warning("⚠️ Model file appears corrupted. Re-downloading...")
+                # Silent removal and re-download
                 os.remove(local_path)
                 return False
         
         return True
     except Exception as e:
-        st.warning(f"⚠️ Error validating model file: {e}. Re-downloading...")
+        # Silent error handling
         if os.path.exists(local_path):
             os.remove(local_path)
         return False
@@ -170,9 +170,9 @@ def _ensure_model_present(local_path: str = DEFAULT_MODEL_PATH):
                 # Get file size if available
                 total_size = int(r.headers.get('content-length', 0))
                 
-                # Warn if file size is suspiciously small
-                if 0 < total_size < 10000:  # Less than 10KB
-                    st.warning(f"⚠️ File size seems small ({total_size} bytes). This might be an error page.")
+                # Check if file size is suspiciously small (silent check)
+                if 0 < total_size < 10000:  # Less than 10KB - likely an error page
+                    pass  # Silent handling
                 
                 # Download silently without progress messages
                 with open(local_path, "wb") as f:
@@ -201,9 +201,8 @@ def _ensure_model_present(local_path: str = DEFAULT_MODEL_PATH):
         if os.path.exists(local_path):
             os.remove(local_path)
         
-        # Try alternative URL format if the first one fails
+        # Try alternative URL format if the first one fails (silent)
         if "drive.google.com" in MODEL_URL and "&confirm=t" not in MODEL_URL:
-            st.warning("🔄 Trying alternative download method...")
             try:
                 alt_url = MODEL_URL + "&confirm=t"
                 with requests.get(alt_url, stream=True) as r:
@@ -213,9 +212,8 @@ def _ensure_model_present(local_path: str = DEFAULT_MODEL_PATH):
                             if chunk:
                                 f.write(chunk)
                 
-                # Validate the alternative download
+                # Validate the alternative download (silent)
                 if _validate_model_file(local_path):
-                    st.success("✅ Model downloaded successfully with alternative method!")
                     return
                     
             except Exception as alt_e:
