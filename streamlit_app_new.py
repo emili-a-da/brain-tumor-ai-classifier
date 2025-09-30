@@ -149,8 +149,7 @@ def _ensure_model_present(local_path: str = DEFAULT_MODEL_PATH):
         """
         raise FileNotFoundError(error_msg)
     
-    # Enhanced download with progress and validation
-    st.info(f"📥 Downloading model from: {MODEL_URL[:50]}...")
+    # Enhanced download with progress and validation (silent mode)
     import requests
     try:
         # Use session for better handling
@@ -175,20 +174,11 @@ def _ensure_model_present(local_path: str = DEFAULT_MODEL_PATH):
                 if 0 < total_size < 10000:  # Less than 10KB
                     st.warning(f"⚠️ File size seems small ({total_size} bytes). This might be an error page.")
                 
-                # Create progress bar
-                if total_size > 0:
-                    progress_bar = st.progress(0)
-                    downloaded = 0
-                    st.write(f"📦 Downloading {total_size / 1024 / 1024:.1f} MB...")
-                
+                # Download silently without progress messages
                 with open(local_path, "wb") as f:
                     for chunk in r.iter_content(chunk_size=8192):
                         if chunk:
                             f.write(chunk)
-                            if total_size > 0:
-                                downloaded += len(chunk)
-                                progress = downloaded / total_size
-                                progress_bar.progress(min(progress, 1.0))
                 
                 # Validate file size and signature
                 file_size = os.path.getsize(local_path)
@@ -205,8 +195,6 @@ def _ensure_model_present(local_path: str = DEFAULT_MODEL_PATH):
                     header = f.read(8)
                     if len(header) < 8:
                         raise ValueError("Downloaded file appears to be empty or corrupted.")
-        
-        st.success(f"✅ Model downloaded successfully! ({file_size / 1024 / 1024:.1f} MB)")
         
     except Exception as e:
         # Clean up partial download
@@ -1077,7 +1065,7 @@ with col2:
     with st.spinner("🔄 Loading AI model..."):
         try:
             model = get_model()
-            st.success("✅ Model loaded successfully!")
+            # Model loaded successfully (silent)
         except Exception as e:
             model = None
             model_load_error = e
@@ -1248,8 +1236,6 @@ if uploaded:
             </div>
             """, unsafe_allow_html=True)
     
-
-    
     st.markdown("---")
     
     # Enhanced confidence breakdown section
@@ -1351,4 +1337,3 @@ st.markdown("""
     </p>
 </div>
 """, unsafe_allow_html=True)
-
