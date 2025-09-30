@@ -79,9 +79,9 @@ TUMOR_EXPLANATIONS = {
 try:
     MODEL_URL = st.secrets["MODEL_URL"].strip()
 except (KeyError, FileNotFoundError):
-    # Default model URL from your Google Drive (if no secret is set)
-    # Using direct download format that bypasses virus scan for large files
-    MODEL_URL = "https://drive.google.com/uc?export=download&id=1yGajR8Bj1hGOF3fnp5g_KtDW44ncA3tg"
+    # Default model URL from Hugging Face (reliable and fast)
+    # Hugging Face provides direct download links that work consistently
+    MODEL_URL = "https://huggingface.co/emilia-998/mri_detector/resolve/main/Zuzik_mri_model_final22.h5"
 
 # ========= Utilities =========
 def _validate_model_file(local_path: str) -> bool:
@@ -163,13 +163,23 @@ def _ensure_model_present(local_path: str = DEFAULT_MODEL_PATH):
             with session.get(MODEL_URL, headers=headers, stream=True) as r:
                 r.raise_for_status()
                 
+                # Check if we got an HTML page (Google Drive access denied)
+                content_type = r.headers.get('content-type', '').lower()
+                if 'text/html' in content_type:
+                    raise ValueError("Google Drive returned HTML page - file may be private or link incorrect")
+                
                 # Get file size if available
                 total_size = int(r.headers.get('content-length', 0))
+                
+                # Warn if file size is suspiciously small
+                if 0 < total_size < 10000:  # Less than 10KB
+                    st.warning(f"⚠️ File size seems small ({total_size} bytes). This might be an error page.")
                 
                 # Create progress bar
                 if total_size > 0:
                     progress_bar = st.progress(0)
                     downloaded = 0
+                    st.write(f"📦 Downloading {total_size / 1024 / 1024:.1f} MB...")
                 
                 with open(local_path, "wb") as f:
                     for chunk in r.iter_content(chunk_size=8192):
@@ -183,7 +193,12 @@ def _ensure_model_present(local_path: str = DEFAULT_MODEL_PATH):
                 # Validate file size and signature
                 file_size = os.path.getsize(local_path)
                 if file_size < 1000000:  # Less than 1MB is suspicious for an ML model
-                    raise ValueError(f"Downloaded file is too small ({file_size} bytes). Check URL.")
+                    # Check if it's an HTML error page
+                    with open(local_path, 'r', encoding='utf-8', errors='ignore') as f:
+                        content_start = f.read(200)
+                        if '<html' in content_start.lower() or '<!doctype html' in content_start.lower():
+                            raise ValueError(f"Google Drive access denied - downloaded HTML page instead of model file. Make sure the file is publicly accessible.")
+                    raise ValueError(f"Downloaded file is too small ({file_size} bytes). Expected >100MB for model file.")
                 
                 # Try to read first few bytes to validate it's a valid file
                 with open(local_path, 'rb') as f:
@@ -222,11 +237,30 @@ def _ensure_model_present(local_path: str = DEFAULT_MODEL_PATH):
         raise FileNotFoundError(f"""
         Failed to download model from {MODEL_URL}: {str(e)}
         
-        💡 Solutions:
-        1. Check if the Google Drive link is publicly accessible
-        2. Try uploading the model file manually to your repository
-        3. Use a different file hosting service (Dropbox, GitHub Releases)
-        4. Contact the model provider for a direct download link
+        � **Google Drive Access Issue Detected**
+        The file appears to be private or the link format is incorrect.
+        
+        📋 **Quick Fix Steps:**
+        
+        1. **Make Google Drive File Public:**
+           - Go to Google Drive → Find your model file
+           - Right-click → Share → "Anyone with the link" → Viewer
+           - Use the sharing URL format
+        
+        2. **Alternative: Use GitHub Releases (Recommended)**
+           - Upload your .h5 file to GitHub Releases
+           - Use the direct download URL from releases
+           - More reliable than Google Drive
+        
+        3. **Alternative: Use Dropbox**
+           - Upload to Dropbox
+           - Change ?dl=0 to ?dl=1 in the sharing URL
+        
+        4. **Local Development:**
+           - Place the model file directly in: E:\\Third_try\\secrets.toml\\
+           - File name should be: Zuzik_mri_model_final22.h5
+        
+        💡 **Current issue:** Downloaded only {os.path.getsize(local_path) if os.path.exists(local_path) else 0} bytes (expected >100MB)
         """)
 
 def _preprocess(img_pil: Image.Image) -> np.ndarray:
