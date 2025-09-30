@@ -111,13 +111,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Streamlit framework developers
 - Healthcare professionals who provided domain expertise
 
-## 📞 Contact
 
-- **Developer**: Your Name
-- **Email**: your.email@example.com
-- **LinkedIn**: [Your LinkedIn Profile]
-- **Project Link**: [https://github.com/yourusername/brain-tumor-ai-classifier](https://github.com/yourusername/brain-tumor-ai-classifier)
 
 ---
+
 
 ⚕️ **Built for Healthcare Innovation** • 🧠 **Powered by AI** • 🎯 **Designed for Accuracy**
