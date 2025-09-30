@@ -80,13 +80,45 @@ try:
     MODEL_URL = st.secrets["MODEL_URL"].strip()
 except (KeyError, FileNotFoundError):
     # Default model URL from your Google Drive (if no secret is set)
-    MODEL_URL = "https://drive.google.com/uc?export=download&id=1yGajR8Bj1hGOF3fnp5g_KtDW44ncA3tg"
+    # Using direct download format that bypasses virus scan for large files
+    MODEL_URL = "https://drive.google.com/uc?export=download&id=1yGajR8Bj1hGOF3fnp5g_KtDW44ncA3tg&confirm=t"
 
 # ========= Utilities =========
+def _validate_model_file(local_path: str) -> bool:
+    """Validate that the model file is not corrupted."""
+    try:
+        if not os.path.exists(local_path):
+            return False
+        
+        # Check file size (should be at least 1MB for a valid model)
+        file_size = os.path.getsize(local_path)
+        if file_size < 1000000:
+            st.warning(f"⚠️ Model file seems too small ({file_size} bytes). Re-downloading...")
+            os.remove(local_path)
+            return False
+        
+        # Try to read the file header to check if it's a valid HDF5/Keras file
+        with open(local_path, 'rb') as f:
+            header = f.read(8)
+            # HDF5 files start with specific signature
+            if not header.startswith(b'\x89HDF\r\n\x1a\n'):
+                st.warning("⚠️ Model file appears corrupted. Re-downloading...")
+                os.remove(local_path)
+                return False
+        
+        return True
+    except Exception as e:
+        st.warning(f"⚠️ Error validating model file: {e}. Re-downloading...")
+        if os.path.exists(local_path):
+            os.remove(local_path)
+        return False
+
 def _ensure_model_present(local_path: str = DEFAULT_MODEL_PATH):
     """Download the model if missing and MODEL_URL secret provided."""
     pathlib.Path(os.path.dirname(local_path)).mkdir(parents=True, exist_ok=True)
-    if os.path.exists(local_path):
+    
+    # Check if file exists and is valid
+    if _validate_model_file(local_path):
         return
     if not MODEL_URL:
         # No local file and no URL to fetch from
@@ -105,19 +137,85 @@ def _ensure_model_present(local_path: str = DEFAULT_MODEL_PATH):
         """
         raise FileNotFoundError(error_msg)
     
-    # Stream download to avoid big memory spikes
+    # Enhanced download with progress and validation
     st.info(f"📥 Downloading model from: {MODEL_URL[:50]}...")
     import requests
     try:
-        with requests.get(MODEL_URL, stream=True) as r:
-            r.raise_for_status()
-            with open(local_path, "wb") as f:
-                for chunk in r.iter_content(chunk_size=8192):
-                    if chunk:
-                        f.write(chunk)
-        st.success("✅ Model downloaded successfully!")
+        # Use session for better handling
+        with requests.Session() as session:
+            # Add headers to avoid Google Drive virus scan redirect
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+            }
+            
+            with session.get(MODEL_URL, headers=headers, stream=True) as r:
+                r.raise_for_status()
+                
+                # Get file size if available
+                total_size = int(r.headers.get('content-length', 0))
+                
+                # Create progress bar
+                if total_size > 0:
+                    progress_bar = st.progress(0)
+                    downloaded = 0
+                
+                with open(local_path, "wb") as f:
+                    for chunk in r.iter_content(chunk_size=8192):
+                        if chunk:
+                            f.write(chunk)
+                            if total_size > 0:
+                                downloaded += len(chunk)
+                                progress = downloaded / total_size
+                                progress_bar.progress(min(progress, 1.0))
+                
+                # Validate file size and signature
+                file_size = os.path.getsize(local_path)
+                if file_size < 1000000:  # Less than 1MB is suspicious for an ML model
+                    raise ValueError(f"Downloaded file is too small ({file_size} bytes). Check URL.")
+                
+                # Try to read first few bytes to validate it's a valid file
+                with open(local_path, 'rb') as f:
+                    header = f.read(8)
+                    if len(header) < 8:
+                        raise ValueError("Downloaded file appears to be empty or corrupted.")
+        
+        st.success(f"✅ Model downloaded successfully! ({file_size / 1024 / 1024:.1f} MB)")
+        
     except Exception as e:
-        raise FileNotFoundError(f"Failed to download model from {MODEL_URL}: {str(e)}")
+        # Clean up partial download
+        if os.path.exists(local_path):
+            os.remove(local_path)
+        
+        # Try alternative URL format if the first one fails
+        if "drive.google.com" in MODEL_URL and "&confirm=t" not in MODEL_URL:
+            st.warning("🔄 Trying alternative download method...")
+            try:
+                alt_url = MODEL_URL + "&confirm=t"
+                with requests.get(alt_url, stream=True) as r:
+                    r.raise_for_status()
+                    with open(local_path, "wb") as f:
+                        for chunk in r.iter_content(chunk_size=8192):
+                            if chunk:
+                                f.write(chunk)
+                
+                # Validate the alternative download
+                if _validate_model_file(local_path):
+                    st.success("✅ Model downloaded successfully with alternative method!")
+                    return
+                    
+            except Exception as alt_e:
+                if os.path.exists(local_path):
+                    os.remove(local_path)
+        
+        raise FileNotFoundError(f"""
+        Failed to download model from {MODEL_URL}: {str(e)}
+        
+        💡 Solutions:
+        1. Check if the Google Drive link is publicly accessible
+        2. Try uploading the model file manually to your repository
+        3. Use a different file hosting service (Dropbox, GitHub Releases)
+        4. Contact the model provider for a direct download link
+        """)
 
 def _preprocess(img_pil: Image.Image) -> np.ndarray:
     """
