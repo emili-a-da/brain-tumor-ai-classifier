@@ -16,14 +16,6 @@ A state-of-the-art AI-powered brain tumor classification system built with deep 
 - **🔒 Privacy Compliant**: HIPAA-compliant design principles
 - **⚡ Real-time Processing**: Instant analysis of MRI scans
 
-## 🚀 Demo Screenshots
-
-### Animated Title Header
-![Animated Title](screenshots/animated-title.png)
-
-### Classification Results
-![Classification Results](screenshots/classification-results.png)
-
 ## 🛠️ Technologies Used
 
 - **Deep Learning**: TensorFlow/Keras with VGG16 architecture
@@ -106,4 +98,5 @@ brain-tumor-ai-classifier/
 
 
 ⚕️ **Built for Healthcare Innovation** • 🧠 **Powered by AI** • 🎯 **Designed for Accuracy**
+
 
