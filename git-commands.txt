@@ -1,0 +1,33 @@
+# Git Commands to Upload to GitHub
+
+# After installing Git and creating your GitHub repository, run these commands:
+
+# 1. Navigate to your project directory
+cd "E:\Third_try"
+
+# 2. Initialize Git repository
+git init
+
+# 3. Add all files to staging
+git add .
+
+# 4. Create first commit
+git commit -m "Initial commit: Brain Tumor AI Classifier with animated Streamlit interface"
+
+# 5. Add your GitHub repository as remote (replace with your actual repository URL)
+git remote add origin https://github.com/yourusername/brain-tumor-ai-classifier.git
+
+# 6. Push to GitHub
+git push -u origin main
+
+# Alternative if you get an error about 'main' branch:
+# git branch -M main
+# git push -u origin main
+
+# To check status at any time:
+git status
+
+# To add more files later:
+git add filename.py
+git commit -m "Description of changes"
+git push

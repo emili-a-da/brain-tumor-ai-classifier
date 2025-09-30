@@ -1,0 +1,7 @@
+tensorflow
+numpy
+pillow>=10.0.0
+flask>=3.0
+werkzeug>=3.0
+streamlit>=1.36.0
+gunicorn>=21.2.0 ; platform_system != "Windows"
