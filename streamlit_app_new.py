@@ -126,14 +126,26 @@ def _ensure_model_present(local_path: str = DEFAULT_MODEL_PATH):
         🔍 Model file not found at: {local_path}
         
         📋 Possible solutions:
-        1. Add MODEL_URL to Streamlit Secrets:
-           MODEL_URL = "https://drive.google.com/uc?export=download&id=1yGajR8Bj1hGOF3fnp5g_KtDW44ncA3tg"
         
-        2. Upload model file to your repository in the correct location
+        🔗 **Option 1: Set MODEL_URL in Streamlit Secrets**
+        Add this to your Streamlit Cloud app secrets:
+        ```
+        MODEL_URL = "https://drive.google.com/uc?export=download&id=1yGajR8Bj1hGOF3fnp5g_KtDW44ncA3tg"
+        ```
         
-        3. Check that the model file exists in one of these locations:
-           - {os.path.join(os.path.dirname(__file__), "Zuzik_mri_model_final22.h5")}
-           - {os.path.join("secrets.toml", "Zuzik_mri_model_final22.h5")}
+        📁 **Option 2: Upload model file manually**
+        Place your model file in one of these locations:
+        - {os.path.join(os.path.dirname(__file__), "Zuzik_mri_model_final22.h5")}
+        - {os.path.join("secrets.toml", "Zuzik_mri_model_final22.h5")}
+        
+        🔧 **Option 3: Alternative hosting**
+        Upload your model to:
+        - GitHub Releases (for files under 100MB)
+        - Dropbox with direct download link
+        - Hugging Face Model Hub
+        - Any public file server
+        
+        ℹ️ **Note**: The app will automatically download and validate the model on first run.
         """
         raise FileNotFoundError(error_msg)
     
