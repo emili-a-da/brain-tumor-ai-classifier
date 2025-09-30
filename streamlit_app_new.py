@@ -114,7 +114,7 @@ def _validate_model_file(local_path: str) -> bool:
         return False
 
 def _ensure_model_present(local_path: str = DEFAULT_MODEL_PATH):
-    """Download the model if missing and MODEL_URL secret provided."""
+    """Download the model if missing and MODEL_URL secret provided. (Completely silent operation)"""
     pathlib.Path(os.path.dirname(local_path)).mkdir(parents=True, exist_ok=True)
     
     # Check if file exists and is valid
@@ -269,7 +269,7 @@ def _postprocess(pred: np.ndarray):
     conf_map = {LABELS[i]: float(probs[i]) for i in range(len(LABELS))}
     return LABELS[top_idx], conf_map
 
-@st.cache_resource(show_spinner=True)
+@st.cache_resource(show_spinner=False)
 def get_model(local_path: str = DEFAULT_MODEL_PATH):
     """
     Cache the loaded model across reruns.
@@ -1060,13 +1060,13 @@ st.markdown("""
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
     model_load_error = None
-    with st.spinner("🔄 Loading AI model..."):
-        try:
-            model = get_model()
-            # Model loaded successfully (silent)
-        except Exception as e:
-            model = None
-            model_load_error = e
+    # Load model silently without any progress indicators
+    try:
+        model = get_model()
+        # Model loaded successfully (silent)
+    except Exception as e:
+        model = None
+        model_load_error = e
 
 if model is None:
     st.markdown("""
