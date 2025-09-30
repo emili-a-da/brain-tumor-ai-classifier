@@ -92,17 +92,6 @@ brain-tumor-ai-classifier/
 
 **IMPORTANT**: This AI model is designed for educational and research purposes only. It should not be used as a substitute for professional medical diagnosis or treatment decisions. Always consult with qualified healthcare professionals for proper medical evaluation, diagnosis, and treatment planning.
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
@@ -117,3 +106,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 
 ⚕️ **Built for Healthcare Innovation** • 🧠 **Powered by AI** • 🎯 **Designed for Accuracy**
+
