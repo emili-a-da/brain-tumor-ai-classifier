@@ -1248,19 +1248,7 @@ if uploaded:
             </div>
             """, unsafe_allow_html=True)
     
-    # Enhanced medical disclaimer
-    st.markdown("""
-    <div style="background: linear-gradient(135deg, #fef3c7, #fde68a); 
-                padding: 2rem; border-radius: 16px; border: 1px solid #d97706; margin: 2rem 0;
-                box-shadow: 0 4px 16px rgba(217, 119, 6, 0.1);">
-        <h4 style="color: #92400e; margin-top: 0; font-weight: 600;">⚕️ Important Medical Disclaimer</h4>
-        <p style="color: #451a03; margin-bottom: 0; line-height: 1.7; font-size: 1rem;">
-            <strong>This AI model is designed for educational and research purposes only.</strong> 
-            It should not be used as a substitute for professional medical diagnosis or treatment decisions. 
-            Always consult with qualified healthcare professionals for proper medical evaluation, diagnosis, and treatment planning.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+
     
     st.markdown("---")
     
@@ -1363,3 +1351,4 @@ st.markdown("""
     </p>
 </div>
 """, unsafe_allow_html=True)
+
