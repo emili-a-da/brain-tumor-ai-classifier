@@ -81,7 +81,7 @@ try:
 except (KeyError, FileNotFoundError):
     # Default model URL from your Google Drive (if no secret is set)
     # Using direct download format that bypasses virus scan for large files
-    MODEL_URL = "https://drive.google.com/uc?export=download&id=1yGajR8Bj1hGOF3fnp5g_KtDW44ncA3tg&confirm=t"
+    MODEL_URL = "https://drive.google.com/uc?export=download&id=1yGajR8Bj1hGOF3fnp5g_KtDW44ncA3tg"
 
 # ========= Utilities =========
 def _validate_model_file(local_path: str) -> bool:
