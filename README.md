@@ -36,7 +36,7 @@ numpy>=1.24.0
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/brain-tumor-ai-classifier.git
+   git clone https://github.com/emili-a-da/brain-tumor-ai-classifier.git
    cd brain-tumor-ai-classifier
    ```
 
@@ -95,6 +95,7 @@ brain-tumor-ai-classifier/
 
 
 ⚕️ **Built for Healthcare Innovation** • 🧠 **Powered by AI** • 🎯 **Designed for Accuracy**
+
 
 
 
