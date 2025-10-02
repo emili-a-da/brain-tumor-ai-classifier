@@ -53,17 +53,6 @@ numpy>=1.24.0
 4. **Open your browser**
    - Navigate to `http://localhost:8501`
 
-## 📁 Project Structure
-
-```
-brain-tumor-ai-classifier/
-├── secrets.toml/
-│   ├── streamlit_app_new.py      # Main Streamlit application
-│   └── Zuzik_mri_model_final22.h5 # Trained AI model
-├── utils.py                      # Utility functions
-├── requirements.txt              # Dependencies
-└── README.md                     # This file
-```
 
 ## 🎯 Model Performance
 
@@ -95,6 +84,7 @@ brain-tumor-ai-classifier/
 
 
 ⚕️ **Built for Healthcare Innovation** • 🧠 **Powered by AI** • 🎯 **Designed for Accuracy**
+
 
 
 
