@@ -47,7 +47,7 @@ numpy>=1.24.0
 
 3. **Run the application**
    ```bash
-   streamlit run secrets.toml/streamlit_app_new.py
+   streamlit run streamlit_app_new.py
    ```
 
 4. **Open your browser**
@@ -95,6 +95,7 @@ brain-tumor-ai-classifier/
 
 
 ⚕️ **Built for Healthcare Innovation** • 🧠 **Powered by AI** • 🎯 **Designed for Accuracy**
+
 
 
 
